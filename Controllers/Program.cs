@@ -142,6 +142,10 @@ namespace Controllers {
                         Inventory loot = monster.GetLoot();
                         you.TakeLoot(loot);
                         Console.WriteLine($"You beat the monster ! You loot the following :\n{loot}");
+                        if (board.isWon()) {
+                            isAlive = false;
+                            Console.WriteLine($"Congratulation, you've cleared Shorewoods out of its monsters. Legends will sing your name for decades to come !\n{you}");
+                        }
                     } else {
                         Console.WriteLine("You died ...\n\nLets remember your character.");
                         Console.WriteLine(you);

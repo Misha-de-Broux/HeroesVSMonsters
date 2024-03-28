@@ -89,10 +89,15 @@ namespace Models {
             return null;
         }
 
+        public bool isWon() {
+            return _hidden.Count == 0;
+        }
+
         public override string ToString() {
             string board = "";
             for(int x = 0; x < _width; x++) {
-                board += " _";
+                board += " " +
+                    "_";
             }
             board += "\n";
             for (int y = 0; y < _height; y++) {
