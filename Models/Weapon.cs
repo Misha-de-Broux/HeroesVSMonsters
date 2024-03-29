@@ -13,6 +13,7 @@ namespace Models {
         public bool IsSecondary { get; init; }
         public bool IsTwoHanded { get; init; }
         public bool AllowsSeconday { get; init; }
+        public int Value { get; private set; }
 
         private Weapon(int damageDie, string name, bool isSecondary, bool isTwoHanded, bool allowsSecondary) {
             _die = new Die(damageDie);
@@ -42,6 +43,7 @@ namespace Models {
             IsSecondary = isSecondary;
             IsSecondary = isTwoHanded;
             AllowsSeconday = allowsSecondary;
+            Value = damageDie/2 + _modifier*2 > 0 ? damageDie / 2 + _modifier * 2 : 1;
         }
 
         private Weapon(int damageDie, string name, bool isTwoHanded) {
@@ -52,6 +54,7 @@ namespace Models {
             IsSecondary = true;
             IsTwoHanded = isTwoHanded;
             AllowsSeconday = true;
+            Value = -1;
         }
 
         public static Weapon NaturalWeapon(int damageDie, string name) {
@@ -68,6 +71,10 @@ namespace Models {
         }
         public static Weapon HeavyWeapon(int damageDie, string name) {
             return new Weapon(damageDie, name, false, true, false);
+        }
+
+        public override string ToString() {
+            return $"{Name} : 1D{DamageDie}. {(IsSecondary ? " It can be used as a secondary weapon." : "")}{(IsTwoHanded ? " It required both your hands." : "")} Its value is arround {Value} golds";
         }
 
 
