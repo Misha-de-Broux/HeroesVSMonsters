@@ -1,4 +1,4 @@
 ﻿public enum LootType {
-    Gold,
-    Leather
+    Gold = 100,
+    Leather = 150
 }

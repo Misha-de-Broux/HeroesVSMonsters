@@ -30,6 +30,18 @@ namespace Models {
                 return null;
             }
         }
+        public int Value {
+            get {
+                int value = 0;
+                foreach(Weapon weapon in _weapons) {
+                    value += weapon.Value;
+                }
+                foreach(LootType type in _inventory.Keys) {
+                    value += ((int)type) * _inventory[type] / 100;
+                }
+                return value;
+            }
+        }
         public ICollection<LootType> Content { get { return _inventory.Keys; } }
 
         public void Add(LootType type, int ammount) {
@@ -40,11 +52,21 @@ namespace Models {
             }
         }
 
+        public void Add(Weapon? weapon) {
+            if(weapon is not null) {
+                _weapons.Add(weapon);
+            }
+        }
+
         public override string ToString() {
             if(Content.Count == 0 && _weapons.Count == 0) { return "\tnothing"; }
             string result = "";
             foreach (LootType type in Content) {
                 result += $"\t{type} : {_inventory[type]}";
+            }
+            foreach (Weapon weapon in _weapons)
+            {
+                result += $"\n\t{weapon}";
             }
             return result;
         }

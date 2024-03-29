@@ -11,6 +11,7 @@ namespace Models {
 
         public Wolf(Position position) : base(position) {
             Loot.Add(LootType.Leather, new Die(4).Roll());
+            PrimaryWeapon = Weapon.HeavyNaturalWeapon(4, "bite");
         }
 
 

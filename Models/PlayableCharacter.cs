@@ -14,9 +14,10 @@ namespace Models {
         public PlayableCharacter(string name) : base() {
             Inventory = new Inventory();
             Name = name;
+            PrimaryWeapon = Weapon.GenerateWeapon(0);
         }
         public override string ToString() {
-            return $"{base.ToString()}\nInventory :\n{Inventory}";
+            return $"{base.ToString()}\nInventory :\n{Inventory}{(PrimaryWeapon is not null ? $"\nPrimary Weapon : {PrimaryWeapon}":"")}";
         }
 
         public bool WinFight(Monster opponent) {

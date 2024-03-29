@@ -12,7 +12,11 @@ namespace Models {
         }
         public Orc(Position pos) : base(pos) {
             Loot.Add(LootType.Gold, new Die(6).Roll());
+            PrimaryWeapon = Weapon.GenerateWeapon(4);
+            Loot.Add(PrimaryWeapon);
         }
+
+        
 
     }
 }

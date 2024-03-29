@@ -12,6 +12,9 @@ namespace Models {
         public Drake(Position position) : base(position) {
             Loot.Add(LootType.Leather, new Die(4).Roll());
             Loot.Add(LootType.Gold, new Die(6).Roll());
+            PrimaryWeapon = Weapon.NaturalWeapon(4, "bite");
+            _secondaryWeapons.Add(Weapon.NaturalWeapon(3, "claws"));
+            _secondaryWeapons.Add(Weapon.NaturalWeapon(2, "tail"));
         }
     }
 }

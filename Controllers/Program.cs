@@ -1,4 +1,5 @@
 ﻿using Models;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace Controllers {
     internal class Program {
@@ -119,6 +120,7 @@ namespace Controllers {
                 } else {
                     Console.WriteLine("You died ...\n\nLets remember your character.");
                     Console.WriteLine(you);
+                    Console.WriteLine($"Final score : {you.Inventory.Value}.");
                 }
             }
         }
@@ -126,6 +128,7 @@ namespace Controllers {
             Board board = new Board(you);
             Console.WriteLine(board);
             bool isAlive = true;
+            int score = 0;
             while (isAlive) {
                 Console.WriteLine("What direction do you wanna head North, East, West or South ?");
                 string input = Console.ReadLine();
@@ -144,6 +147,7 @@ namespace Controllers {
                         Console.WriteLine($"You beat the monster ! You loot the following :\n{loot}");
                         if (board.isWon()) {
                             isAlive = false;
+                            score += 500;
                             Console.WriteLine($"Congratulation, you've cleared Shorewoods out of its monsters. Legends will sing your name for decades to come !\n{you}");
                         }
                     } else {
@@ -153,6 +157,7 @@ namespace Controllers {
                 }
                 Console.WriteLine(board);
             }
+            Console.WriteLine($"Final score : {score + you.Inventory.Value}.");
         }
         private static bool TryParseDirection(string input, out Directions direction) {
             bool parsed = false;

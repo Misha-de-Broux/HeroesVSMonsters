@@ -41,7 +41,7 @@ namespace Models {
                     break;
             }
             IsSecondary = isSecondary;
-            IsSecondary = isTwoHanded;
+            IsTwoHanded = isTwoHanded;
             AllowsSeconday = allowsSecondary;
             Value = damageDie/2 + _modifier*2 > 0 ? damageDie / 2 + _modifier * 2 : 1;
         }
@@ -57,20 +57,44 @@ namespace Models {
             Value = -1;
         }
 
-        public static Weapon NaturalWeapon(int damageDie, string name) {
+        internal static Weapon NaturalWeapon(int damageDie, string name) {
             return new Weapon(damageDie, name, false);
         }
-        public static Weapon HeavyNaturalWeapon(int damageDie, string name) {
+        internal static Weapon HeavyNaturalWeapon(int damageDie, string name) {
             return new Weapon(damageDie, name, true);
         }
-        public static Weapon LightWeapon(int damageDie, string name) {
+        internal static Weapon LightWeapon(int damageDie, string name) {
             return new Weapon(damageDie, name, true, false, true);
         }
-        public static Weapon MainWeapon(int damageDie, string name) {
+        internal static Weapon MainWeapon(int damageDie, string name) {
             return new Weapon(damageDie, name, false, false, true);
         }
-        public static Weapon HeavyWeapon(int damageDie, string name) {
+        internal static Weapon HeavyWeapon(int damageDie, string name) {
             return new Weapon(damageDie, name, false, true, false);
+        }
+        internal static Weapon? GenerateWeapon(int missOdds) {
+            Weapon? weapon = null;
+            switch (Random.Shared.Next(6 + missOdds)) {
+                case 0:
+                    weapon = Weapon.LightWeapon(4, "dagger");
+                    break;
+                case 1:
+                    weapon = Weapon.LightWeapon(6, "shortsword");
+                    break;
+                case 2:
+                    weapon = Weapon.MainWeapon(6, "club");
+                    break;
+                case 3:
+                    weapon = Weapon.MainWeapon(8, "longsword");
+                    break;
+                case 4:
+                    weapon = Weapon.HeavyWeapon(8, "thicc club");
+                    break;
+                case 5:
+                    weapon = Weapon.HeavyWeapon(10, "battleaxe");
+                    break;
+            }
+            return weapon;
         }
 
         public override string ToString() {
