@@ -23,9 +23,9 @@ namespace Models {
             bool isAlive = true, oppoIsAlive = true;
             for (int i = 0; isAlive && oppoIsAlive; i++) {
                 if (i % 2 == 0) {
-                    oppoIsAlive = opponent.DieFrom(RollDamage());
+                    oppoIsAlive = opponent.DieFrom(this);
                 } else {
-                    isAlive = DieFrom(opponent.RollDamage());
+                    isAlive = DieFrom(opponent);
                 }
             }
             return isAlive;

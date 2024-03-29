@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 namespace Models {
     public abstract class Character {
 
-        private Die d4;
+        protected List<Weapon> _secondaryWeapons;
+        public Weapon? PrimaryWeapon {  get; protected set; }
+        public Weapon[] SecondaryWeapon { get { return _secondaryWeapons.ToArray(); }  }
         public virtual int Strength { get; private set; }
         public virtual int Constitution { get; private set; }
         public Position Position { get; protected set; }
@@ -22,8 +24,8 @@ namespace Models {
             Strength = RollStat();
             Constitution = RollStat();
             HP = Constitution + GetModif(Constitution);
-            d4 = new Die(4);
-            this.Position = position;
+            Position = position;
+            _secondaryWeapons = new List<Weapon>();
         }
 
         public override string ToString() {
@@ -35,15 +37,22 @@ namespace Models {
             HP = Constitution + GetModif(Constitution);
         }
 
-        internal bool DieFrom(int damage) {
+        internal bool DieFrom(Character opponent) {
+            Weapon primary = opponent.PrimaryWeapon is null ? DEFAULT_WEAPON : opponent.PrimaryWeapon;
+            int damage = primary.DamageRoll() + (primary.IsTwoHanded ? 2 : 1) * GetModif(opponent.Strength) ;
             if (damage < 0) { damage = 0; }
             HP -= damage;
-            Console.WriteLine($"{Denomination} takes {damage} damages{(HP <= 0 ? " and dies." : "")}");
+            Console.WriteLine($"{Denomination} takes {damage} damages from {opponent.Denomination}'s {primary.Name}");
+            foreach (Weapon seconday in opponent.SecondaryWeapon) {
+                damage = seconday.DamageRoll() + GetModif(opponent.Strength) < 0 ? GetModif(opponent.Strength) : 0;
+                if (damage < 0) { damage = 0; }
+                HP -= damage;
+                Console.WriteLine($"{Denomination} takes {damage} damages from {opponent.Denomination}'s {seconday.Name}");
+            }
+            if(HP < 0) {
+                Console.WriteLine($"{Denomination} dies.");
+            }
             return HP > 0;
-        }
-
-        internal int RollDamage() {
-            return d4.Roll() + GetModif(Strength);
         }
 
         private int GetModif(int stat) {
@@ -63,6 +72,8 @@ namespace Models {
             }
             return stat;
         }
+
+        private static Weapon DEFAULT_WEAPON = Weapon.NaturalWeapon(4, "natural weapons");
 
     }
 }

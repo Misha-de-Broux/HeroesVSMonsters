@@ -25,16 +25,16 @@ namespace Models {
                 modifierRoll < damageDie / 3 ? -1 : 0;
             switch(_modifier) {
                 case 2:
-                    Name = "Exceptional " + name;
+                    Name = "exceptional " + name;
                     break;
                 case 1:
-                    Name = "Good " + name;
+                    Name = "good " + name;
                     break;
                 case -1:
-                    Name = "Poor " + name;
+                    Name = "poor " + name;
                     break;
                 case -2:
-                    Name = "Abysmal " + name;
+                    Name = "abysmal " + name;
                     break;
                 default:
                     Name = name;
@@ -76,7 +76,9 @@ namespace Models {
         public override string ToString() {
             return $"{Name} : 1D{DamageDie}. {(IsSecondary ? " It can be used as a secondary weapon." : "")}{(IsTwoHanded ? " It required both your hands." : "")} Its value is arround {Value} golds";
         }
-
+        public int DamageRoll() {
+            return _die.Roll() + _modifier;
+        }
 
     }
 }
