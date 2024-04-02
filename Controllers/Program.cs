@@ -133,29 +133,45 @@ namespace Controllers {
                 Console.WriteLine("What direction do you wanna head North, East, West or South ?");
                 string input = Console.ReadLine();
                 Directions direcion;
-                while(!TryParseDirection(input, out direcion)){
+                Command command;
+                bool isDirection = TryParseDirection(input, out direcion);
+                bool isCommand = TryParseDirection(input, out command);
+                while (!isDirection && !isCommand) {
                     Console.WriteLine("Please enter a correct input.\nWhat direction do you wanna head North, East, West or South ?");
                     input = Console.ReadLine();
+                    isDirection = TryParseDirection(input, out direcion);
+                    isCommand = TryParseDirection(input, out command);
                 }
-                Monster? monster = board.MoveHero(direcion);
-                if(monster is not null) {
-                    Console.WriteLine($"\nA {monster.GetType().Name} attacks you !");
-                    isAlive = you.WinFight(monster);
-                    if (isAlive) {
-                        Inventory loot = monster.GetLoot();
-                        you.TakeLoot(loot);
-                        Console.WriteLine($"You beat the monster ! You loot the following :\n{loot}");
-                        if (board.isWon()) {
-                            isAlive = false;
-                            score += 500;
-                            Console.WriteLine($"Congratulation, you've cleared Shorewoods out of its monsters. Legends will sing your name for decades to come !\n{you}");
+                if (isDirection) {
+                    Monster? monster = board.MoveHero(direcion);
+                    if (monster is not null) {
+                        Console.WriteLine($"\nA {monster.GetType().Name} attacks you !");
+                        isAlive = you.WinFight(monster);
+                        if (isAlive) {
+                            Inventory loot = monster.GetLoot();
+                            you.TakeLoot(loot);
+                            Console.WriteLine($"You beat the monster ! You loot the following :\n{loot}");
+                            if (board.isWon()) {
+                                isAlive = false;
+                                score += 500;
+                                Console.WriteLine($"Congratulation, you've cleared Shorewoods out of its monsters. Legends will sing your name for decades to come !\n{you}");
+                            }
+                        } else {
+                            Console.WriteLine("You died ...\n\nLets remember your character.");
+                            Console.WriteLine(you);
                         }
-                    } else {
-                        Console.WriteLine("You died ...\n\nLets remember your character.");
-                        Console.WriteLine(you);
+                    }
+                    Console.WriteLine(board);
+                } if (isCommand) {
+                    switch (command) {
+                        case Command.Inventory:
+                            Console.WriteLine($"Your inventory is :\n{you.Inventory}");
+                            break;
+                        case Command.Equip:
+                            
+                            break;
                     }
                 }
-                Console.WriteLine(board);
             }
             Console.WriteLine($"Final score : {score + you.Inventory.Value}.");
         }
@@ -244,6 +260,46 @@ namespace Controllers {
             }
             return parsed;
         }
-        
+        private static bool TryParseDirection(string input, out Command command) {
+            bool parsed = false;
+            switch (input) {
+                case "equip":
+                    parsed = true;
+                    command = Command.Equip;
+                    break;
+                case "Equip":
+                    parsed = true;
+                    command = Command.Equip;
+                    break;
+                case "p":
+                    parsed = true;
+                    command = Command.Equip;
+                    break;
+                case "P":
+                    parsed = true;
+                    command = Command.Equip;
+                    break;
+                case "inventory":
+                    parsed = true;
+                    command = Command.Inventory;
+                    break;
+                case "Inventory":
+                    parsed = true;
+                    command = Command.Inventory;
+                    break;
+                case "i":
+                    parsed = true;
+                    command = Command.Inventory;
+                    break;
+                case "I":
+                    parsed = true;
+                    command = Command.Inventory;
+                    break;
+                default:
+                    command = Command.Inventory;
+                    break;
+            }
+            return parsed;
+        }
     }
 }
