@@ -35,5 +35,27 @@ namespace Models {
             Inventory += loot;
         }
 
+        public void EquipPrimary(Weapon? weapon) {
+            Inventory.Add(PrimaryWeapon);
+            PrimaryWeapon = weapon;
+            if (weapon is not null && weapon.IsTwoHanded) {
+                EquipSecondary(null);
+            }
+        }
+
+        public void EquipSecondary(Weapon? weapon) {
+            Weapon? previous = SecondaryWeapon.Count() >0 ?SecondaryWeapon[0]:null;
+
+            if (weapon is null) {
+                _secondaryWeapons = new List<Weapon>();
+            } 
+            else if(weapon.IsSecondary) {
+                _secondaryWeapons = new List<Weapon>() { weapon };
+            }
+            if(previous is not null) {
+                Inventory.Add(previous);
+            }
+        }
+
     }
 }
