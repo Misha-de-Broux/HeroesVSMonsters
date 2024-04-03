@@ -9,6 +9,6 @@ namespace Models {
         public override int Constitution => base.Constitution + 1;
         public override int Strength => base.Strength + 1;
 
-        public Human(string name) : base(name) { }
+        internal Human(string name) : base(name) { }
     }
 }
