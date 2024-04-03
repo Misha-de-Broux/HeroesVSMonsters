@@ -16,6 +16,17 @@ namespace Models {
                 }
             } 
         }
+
+        public PlayableCharacter CreateHero(Race race, string name) {
+            switch(race) {
+                case Race.Human:
+                    return new Human(name);
+                case Race.Dwarf:
+                    return new Dwarf(name);
+                default:
+                    throw new Exception("Unknown race");
+            }
+        }
         public string Name { get; init; }
         public override string Denomination { get { return Name + " the " + this.GetType().Name; } }
 

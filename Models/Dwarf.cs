@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 namespace Models {
     public class Dwarf : PlayableCharacter{
         public override int Constitution => base.Constitution + 2;
-        public Dwarf(string name) : base(name) { }
+        internal Dwarf(string name) : base(name) { }
     }
 }

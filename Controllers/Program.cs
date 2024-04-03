@@ -13,18 +13,7 @@ namespace Controllers {
                 Console.WriteLine("Sorry, the only available races are : " + Utils.ListRaces());
                 parsed = Enum.TryParse(Console.ReadLine(), out race);
             }
-            PlayableCharacter you;
-            switch (race) {
-                case Race.Human:
-                    you = new Human(name);
-                    break;
-                case Race.Dwarf:
-                    you = new Dwarf(name);
-                    break;
-                default:
-                    Console.WriteLine("An error occured during the race choice.");
-                    return;
-            }
+            PlayableCharacter you = PlayableCharacter.CreateHero(race, name);
             Console.WriteLine($"Welcome to Shorewoods, here is your character sheet :\n{you}\n");
             if (CheckYesOrNo("Do you wanna play on a board ?")) {
                 PlayOnBoard(you);
