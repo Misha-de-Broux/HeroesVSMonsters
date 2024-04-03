@@ -9,7 +9,7 @@ namespace Models {
 
         protected List<Weapon> _secondaryWeapons;
         public Weapon? PrimaryWeapon {  get; protected set; }
-        public Weapon[] SecondaryWeapon { get { return _secondaryWeapons.ToArray(); }  }
+        public Weapon[] SecondaryWeapons { get { return _secondaryWeapons.ToArray(); }  }
         public virtual int Strength { get; private set; }
         public virtual int Constitution { get; private set; }
         public Position Position { get; protected set; }
@@ -43,8 +43,8 @@ namespace Models {
             if (damage < 0) { damage = 0; }
             HP -= damage;
             Console.WriteLine($"{Denomination} takes {damage} damages from {opponent.Denomination}'s {primary.Name}");
-            foreach (Weapon seconday in opponent.SecondaryWeapon) {
-                damage = seconday.DamageRoll() + GetModif(opponent.Strength) < 0 ? GetModif(opponent.Strength) : 0;
+            foreach (Weapon seconday in opponent.SecondaryWeapons) {
+                damage = seconday.DamageRoll() + (GetModif(opponent.Strength) < 0 ? GetModif(opponent.Strength) : 0);
                 if (damage < 0) { damage = 0; }
                 HP -= damage;
                 Console.WriteLine($"{Denomination} takes {damage} damages from {opponent.Denomination}'s {seconday.Name}");

@@ -4,94 +4,37 @@ using static System.Formats.Asn1.AsnWriter;
 namespace Controllers {
     internal class Program {
         public static void Main(string[] args) {
-            const string HUMAN = "Human";
-            const string DWARF = "Dwarf";
-
-            string[] raceNames = [HUMAN, DWARF];
-
             Console.WriteLine("Hello, new adventurer!\nWhat is your name ?");
             string name = Console.ReadLine();
-            Console.WriteLine($"{name} ? What a great name ! What race are you ? {ListRaces(raceNames)} ?");
-            string race = Console.ReadLine();
-            while (!raceNames.Contains(race)) {
-                Console.WriteLine("Sorry, the only available races are : " + ListRaces(raceNames));
-                race = Console.ReadLine();
+            Console.WriteLine($"{name} ? What a great name ! What race are you ? {Utils.ListRaces()} ?");
+            Race race;
+            bool parsed = Enum.TryParse(Console.ReadLine(), out race);
+            while (!parsed) {
+                Console.WriteLine("Sorry, the only available races are : " + Utils.ListRaces());
+                parsed = Enum.TryParse(Console.ReadLine(), out race);
             }
             PlayableCharacter you;
             switch (race) {
-                case HUMAN:
+                case Race.Human:
                     you = new Human(name);
                     break;
-                case DWARF:
+                case Race.Dwarf:
                     you = new Dwarf(name);
                     break;
                 default:
                     Console.WriteLine("An error occured during the race choice.");
                     return;
             }
-            Console.WriteLine($"Welcome to Shorewoods, here is your character sheet :\n{you}\nDo you wanna play on a board ? (Y)es or (N)o");
-            int mode = OnBoard(Console.ReadLine());
-            while (mode < 0) {
-                Console.WriteLine("Please enter a valid answer.\nDo you wanna play on a board ? (Y)es or (N)o");
-                mode = OnBoard(Console.ReadLine());
+            Console.WriteLine($"Welcome to Shorewoods, here is your character sheet :\n{you}\n");
+            if (CheckYesOrNo("Do you wanna play on a board ?")) {
+                PlayOnBoard(you);
+            } else {
+                PlayOffBoard(you);
             }
-            switch (mode) {
-                case 1:
-                    PlayOnBoard(you);
-                    break;
-                default:
-                    PlayOffBoard(you);
-                    break;
-            }
-
-
-
         }
 
-        private static string ListRaces(string[] raceNames) {
-            string result = raceNames[0];
-            for (int i = 1; i < raceNames.Length; i++) {
-                if (i == raceNames.Length - 1) {
-                    result += " or " + raceNames[i];
-                } else {
-                    result += ", " + raceNames[i];
-                }
-            }
-            return result;
-        }
-        private static int OnBoard(String answer) {
-            int result;
-            switch (answer) {
-                case "y":
-                    result = 1;
-                    break;
-                case "Y":
-                    result = 1;
-                    break;
-                case "yes":
-                    result = 1;
-                    break;
-                case "Yes":
-                    result = 1;
-                    break;
-                case "n":
-                    result = 0;
-                    break;
-                case "N":
-                    result = 0;
-                    break;
-                case "no":
-                    result = 0;
-                    break;
-                case "No":
-                    result = 0;
-                    break;
-                default:
-                    result = -1;
-                    break;
-            }
-            return result;
-        }
+
+
         private static void PlayOffBoard(PlayableCharacter you) {
             bool isAlive = true;
             Monster monster;
@@ -124,8 +67,8 @@ namespace Controllers {
                 }
             }
         }
-        private static void PlayOnBoard(PlayableCharacter you) {
-            Board board = new Board(you);
+        private static void PlayOnBoard(PlayableCharacter hero) {
+            Board board = new Board(hero);
             Console.WriteLine(board);
             bool isAlive = true;
             int score = 0;
@@ -134,172 +77,120 @@ namespace Controllers {
                 string input = Console.ReadLine();
                 Directions direcion;
                 Command command;
-                bool isDirection = TryParseDirection(input, out direcion);
-                bool isCommand = TryParseDirection(input, out command);
+                bool isDirection = Utils.TryParseDirection(input, out direcion);
+                bool isCommand = Utils.TryParseCommand(input, out command);
                 while (!isDirection && !isCommand) {
                     Console.WriteLine("Please enter a correct input.\nWhat direction do you wanna head North, East, West or South ?");
                     input = Console.ReadLine();
-                    isDirection = TryParseDirection(input, out direcion);
-                    isCommand = TryParseDirection(input, out command);
+                    isDirection = Utils.TryParseDirection(input, out direcion);
+                    isCommand = Utils.TryParseCommand(input, out command);
                 }
                 if (isDirection) {
                     Monster? monster = board.MoveHero(direcion);
                     if (monster is not null) {
                         Console.WriteLine($"\nA {monster.GetType().Name} attacks you !");
-                        isAlive = you.WinFight(monster);
+                        isAlive = hero.WinFight(monster);
                         if (isAlive) {
                             Inventory loot = monster.GetLoot();
-                            you.TakeLoot(loot);
+                            hero.TakeLoot(loot);
                             Console.WriteLine($"You beat the monster ! You loot the following :\n{loot}");
                             if (board.isWon()) {
                                 isAlive = false;
                                 score += 500;
-                                Console.WriteLine($"Congratulation, you've cleared Shorewoods out of its monsters. Legends will sing your name for decades to come !\n{you}");
+                                Console.WriteLine($"Congratulation, you've cleared Shorewoods out of its monsters. Legends will sing your name for decades to come !\n{hero}");
                             }
                         } else {
                             Console.WriteLine("You died ...\n\nLets remember your character.");
-                            Console.WriteLine(you);
+                            Console.WriteLine(hero);
                         }
                     }
                     Console.WriteLine(board);
-                } if (isCommand) {
+                }
+                if (isCommand) {
                     switch (command) {
                         case Command.Inventory:
-                            Console.WriteLine($"Your inventory is :\n{you.Inventory}");
+                            Console.WriteLine($"Your inventory is :\n{hero.Inventory}");
+                            break;
+                        case Command.Character:
+                            Console.WriteLine(hero);
+                            break;
+                        case Command.Map:
+                            Console.WriteLine(board);
                             break;
                         case Command.Equip:
-                            
+                            Console.WriteLine($"Your primary weapon is : {hero.PrimaryWeapon}");
+                            if (hero.SecondaryWeapons.Length > 0)
+                                Console.WriteLine($"Your secondary weapon is = {hero.SecondaryWeapons[0]}");
+                            SwitchPrimaryWeapon(hero);
+                            if (hero.PrimaryWeapon is null || hero.PrimaryWeapon.AllowsSecondary) {
+                                SwitchSecondaryWeapon(hero);
+                            }
                             break;
                     }
                 }
             }
-            Console.WriteLine($"Final score : {score + you.Inventory.Value}.");
+            Console.WriteLine($"Final score : {score + (hero.PrimaryWeapon is null ? 0 : hero.PrimaryWeapon.Value) + (hero.SecondaryWeapon is null ? 0 : hero.SecondaryWeapon.Value) + hero.Inventory.Value}.");
         }
-        private static bool TryParseDirection(string input, out Directions direction) {
-            bool parsed = false;
-            switch (input) {
-                case "North":
-                    direction = Directions.North;
-                    parsed = true;
-                    break;
-                case "north":
-                    direction = Directions.North;
-                    parsed = true;
-                    break;
-                case "N":
-                    direction = Directions.North;
-                    parsed = true;
-                    break;
-                case "n":
-                    direction = Directions.North;
-                    parsed = true;
-                    break;
-                case "z":
-                    direction = Directions.North;
-                    parsed = true;
-                    break;
-                case "South":
-                    direction = Directions.South;
-                    parsed = true;
-                    break; ;
-                case "south":
-                    direction = Directions.South;
-                    parsed = true;
-                    break; ;
-                case "S":
-                    direction = Directions.South;
-                    parsed = true;
-                    break; ;
-                case "s":
-                    direction = Directions.South;
-                    parsed = true;
-                    break;
-                case "East":
-                    direction = Directions.East;
-                    parsed = true;
-                    break;
-                case "e":
-                    direction = Directions.East;
-                    parsed = true;
-                    break;
-                case "east":
-                    direction = Directions.East;
-                    parsed = true;
-                    break;
-                case "E":
-                    direction = Directions.East;
-                    parsed = true;
-                    break;
-                case "d":
-                    direction = Directions.East;
-                    parsed = true;
-                    break;
-                case "West":
-                    direction = Directions.West;
-                    parsed = true;
-                    break;
-                case "west":
-                    direction = Directions.West;
-                    parsed = true;
-                    break;
-                case "W":
-                    direction = Directions.West;
-                    parsed = true;
-                    break;
-                case "w":
-                    direction = Directions.West;
-                    parsed = true;
-                    break;
-                case "q":
-                    direction = Directions.West;
-                    parsed = true;
-                    break;
-                default:
-                    direction = Directions.East;
-                    break;
+
+        private static void SwitchPrimaryWeapon(PlayableCharacter hero) {
+            Console.WriteLine("Available weapons : \n\t0 : none");
+            for (int i = 0; i < hero.Inventory.WeaponsCount; i++) {
+                Console.WriteLine($"\t{i + 1} : {hero.Inventory[i]}");
             }
-            return parsed;
+            if (CheckYesOrNo("Do you want to equip an new weapon ?")) {
+                Console.WriteLine("Which one do you want to equip ?");
+                int x = 0;
+                bool parsed = int.TryParse(Console.ReadLine(), out x);
+                while (!parsed || x < 0 || x > hero.Inventory.WeaponsCount) {
+                    Console.WriteLine("Unvalid number, which one do you want to equip ?");
+                    parsed = int.TryParse(Console.ReadLine(), out x);
+                }
+                Weapon newWeapon = null;
+                if (x == 0) {
+                    hero.EquipPrimary(null);
+                } else {
+                    newWeapon = hero.Inventory[x - 1];
+                    hero.EquipPrimary(newWeapon);
+                    hero.Inventory.Remove(newWeapon);
+                }
+            }
         }
-        private static bool TryParseDirection(string input, out Command command) {
-            bool parsed = false;
-            switch (input) {
-                case "equip":
-                    parsed = true;
-                    command = Command.Equip;
-                    break;
-                case "Equip":
-                    parsed = true;
-                    command = Command.Equip;
-                    break;
-                case "p":
-                    parsed = true;
-                    command = Command.Equip;
-                    break;
-                case "P":
-                    parsed = true;
-                    command = Command.Equip;
-                    break;
-                case "inventory":
-                    parsed = true;
-                    command = Command.Inventory;
-                    break;
-                case "Inventory":
-                    parsed = true;
-                    command = Command.Inventory;
-                    break;
-                case "i":
-                    parsed = true;
-                    command = Command.Inventory;
-                    break;
-                case "I":
-                    parsed = true;
-                    command = Command.Inventory;
-                    break;
-                default:
-                    command = Command.Inventory;
-                    break;
+
+        private static void SwitchSecondaryWeapon(PlayableCharacter hero) {
+            Console.WriteLine("Available seconcary weapons :\n\t0 : none");
+            List<Weapon> availableSecondaries = new List<Weapon>();
+            for (int i = 0; i < hero.Inventory.WeaponsCount; i++) {
+                if (hero.Inventory[i].IsSecondary) {
+                    availableSecondaries.Add(hero.Inventory[i]);
+                    Console.WriteLine($"\t{availableSecondaries.Count} : {hero.Inventory[i]}");
+                }
             }
-            return parsed;
+            if (CheckYesOrNo("Do you want to equip an new weapon ?")) {
+                int x;
+                bool parsed = int.TryParse(Console.ReadLine(), out x);
+                while (!parsed || x < 0 || x > availableSecondaries.Count) {
+                    Console.WriteLine("Unvalid number, which one do you want to equip ?");
+                    parsed = int.TryParse(Console.ReadLine(), out x);
+                }
+                if (x == 0) {
+                    hero.EquipSecondary(null);
+                } else {
+                    Weapon newWeapon = availableSecondaries[x - 1];
+                    hero.EquipSecondary(newWeapon);
+                    hero.Inventory.Remove(newWeapon);
+                }
+            }
+
+        }
+
+        private static bool CheckYesOrNo(string question) {
+            Console.WriteLine(question);
+            int yesOrNo = Utils.TryParseYesOrNo(Console.ReadLine());
+            while (yesOrNo < 0) {
+                Console.WriteLine($"Please enter a valid answer.\n{question} (Y)es or (N)o");
+                yesOrNo = Utils.TryParseYesOrNo(Console.ReadLine());
+            }
+            return yesOrNo > 0;
         }
     }
 }

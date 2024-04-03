@@ -10,6 +10,8 @@ namespace Models {
         private Dictionary<LootType, int> _inventory;
         private List<Weapon> _weapons;
 
+        public int WeaponsCount { get { return _weapons.Count; } }
+
         public Inventory() { 
             _inventory = new Dictionary<LootType, int>();
             _weapons = new List<Weapon>();
@@ -52,11 +54,18 @@ namespace Models {
             }
         }
 
-        public void Add(Weapon? weapon) {
+        public bool Add(Weapon? weapon) {
+            bool isAdded = false;
             if(weapon is not null) {
                 _weapons.Add(weapon);
+                isAdded = true;
             }
+            return isAdded;
         }
+
+        public bool Remove(Weapon weapon) {  return _weapons.Remove(weapon); }
+
+
 
         public override string ToString() {
             if(Content.Count == 0 && _weapons.Count == 0) { return "\tnothing"; }

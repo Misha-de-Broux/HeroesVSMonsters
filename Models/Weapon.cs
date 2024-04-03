@@ -12,7 +12,7 @@ namespace Models {
         public string Name { get; init; }
         public bool IsSecondary { get; init; }
         public bool IsTwoHanded { get; init; }
-        public bool AllowsSeconday { get; init; }
+        public bool AllowsSecondary { get; init; }
         public int Value { get; private set; }
 
         private Weapon(int damageDie, string name, bool isSecondary, bool isTwoHanded, bool allowsSecondary) {
@@ -42,7 +42,7 @@ namespace Models {
             }
             IsSecondary = isSecondary;
             IsTwoHanded = isTwoHanded;
-            AllowsSeconday = allowsSecondary;
+            AllowsSecondary = allowsSecondary;
             Value = damageDie/2 + _modifier*2 > 0 ? damageDie / 2 + _modifier * 2 : 1;
         }
 
@@ -53,7 +53,7 @@ namespace Models {
             Name = name;
             IsSecondary = true;
             IsTwoHanded = isTwoHanded;
-            AllowsSeconday = true;
+            AllowsSecondary = true;
             Value = -1;
         }
 

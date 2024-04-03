@@ -8,6 +8,14 @@ namespace Models {
     public class PlayableCharacter : Character {
 
         public Inventory Inventory { get; private set; }
+        public Weapon? SecondaryWeapon { get { 
+                if (SecondaryWeapons.Length == 0) {
+                    return null;
+                } else {
+                    return SecondaryWeapons[0];
+                }
+            } 
+        }
         public string Name { get; init; }
         public override string Denomination { get { return Name + " the " + this.GetType().Name; } }
 
@@ -17,7 +25,7 @@ namespace Models {
             PrimaryWeapon = Weapon.GenerateWeapon(0);
         }
         public override string ToString() {
-            return $"{base.ToString()}\nInventory :\n{Inventory}{(PrimaryWeapon is not null ? $"\nPrimary Weapon : {PrimaryWeapon}":"")}";
+            return $"{base.ToString()}\nInventory :\n{Inventory}{(PrimaryWeapon is not null ? $"\nPrimary Weapon : {PrimaryWeapon}":"")}{(SecondaryWeapon is null ? "" : $"\nSecondary Weapon : {SecondaryWeapon}")}";
         }
 
         public bool WinFight(Monster opponent) {
@@ -44,7 +52,7 @@ namespace Models {
         }
 
         public void EquipSecondary(Weapon? weapon) {
-            Weapon? previous = SecondaryWeapon.Count() >0 ?SecondaryWeapon[0]:null;
+            Weapon? previous = SecondaryWeapon;
 
             if (weapon is null) {
                 _secondaryWeapons = new List<Weapon>();

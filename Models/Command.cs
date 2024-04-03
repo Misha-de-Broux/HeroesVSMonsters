@@ -1,4 +1,6 @@
 ﻿public enum Command {
     Equip,
-    Inventory
+    Inventory,
+    Character,
+    Map
 }
